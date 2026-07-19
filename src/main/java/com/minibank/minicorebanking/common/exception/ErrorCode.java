@@ -12,7 +12,14 @@ public enum ErrorCode {
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C002", "서버 오류가 발생했습니다"),
 
     DUPLICATE_PHONE(HttpStatus.CONFLICT, "CU001", "이미 등록된 전화번호입니다"),
-    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "CU002", "존재하지 않는 고객입니다");
+    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "CU002", "존재하지 않는 고객입니다"),
+
+    // Account
+    ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "AC001", "존재하지 않는 계좌입니다"),
+    ALREADY_CLOSED(HttpStatus.CONFLICT, "AC002", "이미 해지된 계좌입니다"),
+    BALANCE_REMAINING(HttpStatus.CONFLICT, "AC003", "잔액이 남아 있어 해지할 수 없습니다"),
+    ACCOUNT_NO_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AC004", "계좌번호 생성에 실패했습니다");
+
 
     private final HttpStatus status;
     private final String code;
