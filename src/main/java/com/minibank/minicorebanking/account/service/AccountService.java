@@ -11,6 +11,7 @@ import com.minibank.minicorebanking.customer.repository.CustomerRepository;
 import com.minibank.minicorebanking.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -22,19 +23,30 @@ public class AccountService {
 
     // 계좌 개설
     public AccountResponse createAccount(AccountCreateRequest request){
-            Customer customer = customerRepository.findById(request.customerId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.CUSTOMER_NOT_FOUND));
+        Customer customer = customerRepository.findById(request.customerId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.CUSTOMER_NOT_FOUND));
 
-            String accountNo = generateAccountNo();
+        String accountNo = generateAccountNo();
 
-            Account account = Account.builder()
-                    .customer(customer)
-                    .accountNo(accountNo)
-                    .accountType(request.accountType())
-                    .build();
+        Account account = Account.builder()
+                .customer(customer)
+                .accountNo(accountNo)
+                .accountType(request.accountType())
+                .build();
 
-            return AccountResponse.from(accountRepository.save(account));
+        return AccountResponse.from(accountRepository.save(account));
+    }
+
+        // 계좌 조회
+        @Transactional(readOnly = true)
+        public AccountResponse getAccount(String accountNo){
+            Account account = accountRepository.findByAccountNo(accountNo)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+            return AccountResponse.from(account);
         }
+
+        // 고객 계좌 목록 조회
+
 
     public String generateAccountNo(){
         for(int i = 0; i < 5; i++){
