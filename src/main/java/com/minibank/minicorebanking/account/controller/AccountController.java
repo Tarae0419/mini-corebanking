@@ -3,6 +3,8 @@ package com.minibank.minicorebanking.account.controller;
 import com.minibank.minicorebanking.account.dto.AccountCreateRequest;
 import com.minibank.minicorebanking.account.dto.AccountResponse;
 import com.minibank.minicorebanking.account.service.AccountService;
+import com.minibank.minicorebanking.transaction.dto.TransactionRequest;
+import com.minibank.minicorebanking.transaction.dto.TransactionResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,5 +43,17 @@ public class AccountController {
     public ResponseEntity<Void> closeAccount(@PathVariable String accountNo){
         accountService.closeAccount(accountNo);
         return ResponseEntity.noContent().build();
+    }
+
+    // 입금
+    @PostMapping("/{accountNo}/deposit")
+    public ResponseEntity<TransactionResponse> deposit(@PathVariable String accountNo, @Valid @RequestBody TransactionRequest request){
+        return ResponseEntity.ok(accountService.deposit(accountNo, request.amount()));
+    }
+
+    // 출금
+    @PostMapping("/{accountNo}/withdraw")
+    public ResponseEntity<TransactionResponse> withdraw(@PathVariable String accountNo, @Valid @RequestBody TransactionRequest request){
+        return ResponseEntity.ok(accountService.withdraw(accountNo, request.amount()));
     }
 }
