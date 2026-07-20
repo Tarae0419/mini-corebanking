@@ -1,5 +1,7 @@
 package com.minibank.minicorebanking.account.entity;
 
+import com.minibank.minicorebanking.common.exception.BusinessException;
+import com.minibank.minicorebanking.common.exception.ErrorCode;
 import com.minibank.minicorebanking.customer.entity.Customer;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -65,6 +67,17 @@ public class Account {
         this.dailyTransferLimit = 5000000L;
         this.interestRate = new BigDecimal("0.0100");;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void close(){
+        if(this.status == AccountStatus.CLOSED){
+            throw new BusinessException(ErrorCode.ALREADY_CLOSED);
+        }
+        if(this.balance > 0){
+            throw new BusinessException(ErrorCode.BALANCE_REMAINING);
+        }
+        this.status = AccountStatus.CLOSED;
+        this.closedAt = LocalDateTime.now();
     }
 }
 
