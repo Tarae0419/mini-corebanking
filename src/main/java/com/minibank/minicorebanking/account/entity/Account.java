@@ -79,5 +79,26 @@ public class Account {
         this.status = AccountStatus.CLOSED;
         this.closedAt = LocalDateTime.now();
     }
+
+    public void deposit(long amount){
+        if(this.status != AccountStatus.ACTIVE){
+            throw new BusinessException(ErrorCode.ACCOUNT_NOT_ACTIVE);
+        }
+
+        this.balance += amount;
+        this.lastTransactionAt = LocalDateTime.now();
+    }
+
+    public void withdraw(long amount){
+        if(this.status != AccountStatus.ACTIVE){
+            throw new BusinessException(ErrorCode.ACCOUNT_NOT_ACTIVE);
+        }
+        if(this.balance < amount){
+            throw new BusinessException(ErrorCode.INSUFFICIENT_BALANCE);
+        }
+
+        this.balance -= amount;
+        this.lastTransactionAt = LocalDateTime.now();
+    }
 }
 

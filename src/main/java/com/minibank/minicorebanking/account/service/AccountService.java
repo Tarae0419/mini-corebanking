@@ -8,7 +8,10 @@ import com.minibank.minicorebanking.common.exception.BusinessException;
 import com.minibank.minicorebanking.common.exception.ErrorCode;
 import com.minibank.minicorebanking.customer.entity.Customer;
 import com.minibank.minicorebanking.customer.repository.CustomerRepository;
-import com.minibank.minicorebanking.customer.service.CustomerService;
+import com.minibank.minicorebanking.transaction.dto.TransactionResponse;
+import com.minibank.minicorebanking.transaction.entity.TransactionHistory;
+import com.minibank.minicorebanking.transaction.entity.TransactionType;
+import com.minibank.minicorebanking.transaction.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
+    private final TransactionRepository transactionRepository;
 
     // 계좌 개설
     public AccountResponse createAccount(AccountCreateRequest request){
@@ -64,6 +68,42 @@ public class AccountService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.close();
+    }
+
+    // 입금
+    public TransactionResponse deposit(String accountNo, long amount){
+        Account account = accountRepository.findByAccountNo(accountNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+        account.deposit(amount);
+
+        TransactionHistory transactionHistory = TransactionHistory.builder()
+                .accountId(account.getId())
+                .transactionType(TransactionType.DEPOSIT)
+                .amount(amount)
+                .balanceAfter(account.getBalance())
+                .build();
+
+        transactionRepository.save(transactionHistory);
+
+        return TransactionResponse.from(transactionHistory);
+    }
+
+    // 출금
+    public TransactionResponse withdraw(String accountNo, long amount){
+        Account account = accountRepository.findByAccountNo(accountNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+        account.withdraw(amount);
+
+        TransactionHistory transactionHistory = TransactionHistory.builder()
+                .accountId(account.getId())
+                .transactionType(TransactionType.WITHDRAW)
+                .amount(amount)
+                .balanceAfter(account.getBalance())
+                .build();
+
+        transactionRepository.save(transactionHistory);
+
+        return TransactionResponse.from(transactionHistory);
     }
 
 

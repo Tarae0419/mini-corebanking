@@ -18,7 +18,9 @@ public enum ErrorCode {
     ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "AC001", "존재하지 않는 계좌입니다"),
     ALREADY_CLOSED(HttpStatus.CONFLICT, "AC002", "이미 해지된 계좌입니다"),
     BALANCE_REMAINING(HttpStatus.CONFLICT, "AC003", "잔액이 남아 있어 해지할 수 없습니다"),
-    ACCOUNT_NO_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AC004", "계좌번호 생성에 실패했습니다");
+    ACCOUNT_NO_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "AC004", "계좌번호 생성에 실패했습니다"),
+    ACCOUNT_NOT_ACTIVE(HttpStatus.CONFLICT, "AC005", "활성 상태가 아닌 계좌입니다."),
+    INSUFFICIENT_BALANCE(HttpStatus.CONFLICT, "AC006", "잔액이 부족합니다");
 
 
     private final HttpStatus status;
