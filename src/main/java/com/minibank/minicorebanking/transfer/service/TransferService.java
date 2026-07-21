@@ -28,11 +28,31 @@ public class TransferService {
             throw new BusinessException(ErrorCode.SAME_ACCOUNT_TRANSFER);
         }
 
-        Account fromAccount = accountRepository.findByAccountNo(request.fromAccountNo())
+        String firstLockNo;
+        String secondLockNo;
+        if(request.fromAccountNo().compareTo(request.toAccountNo()) < 0){
+            firstLockNo = request.fromAccountNo();
+            secondLockNo = request.toAccountNo();
+        }else{
+            firstLockNo = request.toAccountNo();
+            secondLockNo = request.fromAccountNo();
+        }
+
+        Account firstAccount = accountRepository.findByAccountNoWithLock(firstLockNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        Account toAccount = accountRepository.findByAccountNo(request.toAccountNo())
+        Account secondAccount = accountRepository.findByAccountNoWithLock(secondLockNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        Account fromAccount;
+        Account toAccount;
+        if(firstAccount.getAccountNo().equals(request.fromAccountNo())){
+            fromAccount = firstAccount;
+            toAccount = secondAccount;
+        }else{
+            fromAccount = secondAccount;
+            toAccount = firstAccount;
+        }
 
         Transfer transfer = Transfer.builder()
                 .idempotencyKey(request.idempotencyKey())

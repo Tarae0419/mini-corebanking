@@ -87,7 +87,7 @@ public class TransferConcurrencyTest {
         System.out.println("========================================");
         System.out.println("     동시 이체 정합성 실험 결과");
         System.out.println("========================================");
-        System.out.println("실험 조건   : 100 threads, A→B 각 10,000원 이체, 락 없음");
+        System.out.println("실험 조건   : 100 threads, A→B 각 10,000원 이체, 비관적 락");
         System.out.println("성공 응답   : " + successCount.get() + "건 (이동했어야 할 금액: " + expectedToBalance + "원)");
         System.out.println("실패 응답   : " + failCount.get() + "건");
         System.out.println("----------------------------------------");
