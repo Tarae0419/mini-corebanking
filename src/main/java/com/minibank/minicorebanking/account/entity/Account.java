@@ -48,8 +48,8 @@ public class Account {
     @Column(name = "last_transaction_at")
     private LocalDateTime lastTransactionAt;
 
-    @Version
-    private Long version;
+    // @Version
+    private Long version = 0L;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
