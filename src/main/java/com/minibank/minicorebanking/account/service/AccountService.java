@@ -71,6 +71,7 @@ public class AccountService {
     }
 
     // 입금
+    @Transactional
     public TransactionResponse deposit(String accountNo, long amount){
         Account account = accountRepository.findByAccountNo(accountNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
@@ -89,6 +90,7 @@ public class AccountService {
     }
 
     // 출금
+    @Transactional
     public TransactionResponse withdraw(String accountNo, long amount){
         Account account = accountRepository.findByAccountNo(accountNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
