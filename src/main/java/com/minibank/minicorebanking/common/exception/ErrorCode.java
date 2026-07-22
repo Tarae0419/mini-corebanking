@@ -22,7 +22,8 @@ public enum ErrorCode {
     ACCOUNT_NOT_ACTIVE(HttpStatus.CONFLICT, "AC005", "활성 상태가 아닌 계좌입니다."),
     INSUFFICIENT_BALANCE(HttpStatus.CONFLICT, "AC006", "잔액이 부족합니다"),
 
-    SAME_ACCOUNT_TRANSFER(HttpStatus.BAD_REQUEST, "TR001", "동일한 계좌로는 이체할 수 없습니다.");
+    SAME_ACCOUNT_TRANSFER(HttpStatus.BAD_REQUEST, "TR001", "동일한 계좌로는 이체할 수 없습니다."),
+    TRANSFER_IN_PROGRESS(HttpStatus.CONFLICT, "TR002", "처리 중인 이체 요청입니다.");
 
 
     private final HttpStatus status;

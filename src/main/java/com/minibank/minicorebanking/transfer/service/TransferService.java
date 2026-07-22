@@ -10,10 +10,13 @@ import com.minibank.minicorebanking.transaction.repository.TransactionRepository
 import com.minibank.minicorebanking.transfer.dto.TransferRequest;
 import com.minibank.minicorebanking.transfer.dto.TransferResponse;
 import com.minibank.minicorebanking.transfer.entity.Transfer;
+import com.minibank.minicorebanking.transfer.entity.TransferStatus;
 import com.minibank.minicorebanking.transfer.repository.TransferRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,11 @@ public class TransferService {
 
     @Transactional
     public TransferResponse transfer(TransferRequest request){
+        Optional<Transfer> existing = transferRepository.findByIdempotencyKey(request.idempotencyKey());
+        if (existing.isPresent()) {
+            return handleDuplicate(existing.get());
+        }
+
         if(request.fromAccountNo().equals(request.toAccountNo())){
             throw new BusinessException(ErrorCode.SAME_ACCOUNT_TRANSFER);
         }
@@ -92,5 +100,18 @@ public class TransferService {
         transfer.complete();
 
         return TransferResponse.from(transfer, request.fromAccountNo(), request.toAccountNo());
+    }
+
+    private TransferResponse handleDuplicate(Transfer transfer){
+        if(transfer.getStatus() != TransferStatus.SUCCESS){
+            throw new BusinessException(ErrorCode.TRANSFER_IN_PROGRESS);
+        }
+
+        Account fromAccount = accountRepository.findById(transfer.getFromAccountId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account toAccount = accountRepository.findById(transfer.getToAccountId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        return TransferResponse.from(transfer, fromAccount.getAccountNo(), toAccount.getAccountNo());
     }
 }
