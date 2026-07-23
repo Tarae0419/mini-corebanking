@@ -1,0 +1,11 @@
+@host = http://localhost:8080
+@bigAccountNo = 110-050942498
+
+### OFFSET 첫 페이지
+GET {{host}}/api/accounts/{{bigAccountNo}}/transactions/offset?page=0&size=20
+
+### OFFSET 중간 (50만 번째)
+GET {{host}}/api/accounts/{{bigAccountNo}}/transactions/offset?page=25000&size=20
+
+### OFFSET 끝 (100만 근처)
+GET {{host}}/api/accounts/{{bigAccountNo}}/transactions/offset?page=49990&size=20
