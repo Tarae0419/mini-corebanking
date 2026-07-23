@@ -5,6 +5,7 @@ import com.minibank.minicorebanking.account.dto.AccountResponse;
 import com.minibank.minicorebanking.account.service.AccountService;
 import com.minibank.minicorebanking.transaction.dto.TransactionRequest;
 import com.minibank.minicorebanking.transaction.dto.TransactionResponse;
+import com.minibank.minicorebanking.transaction.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
+    private final TransactionService transactionService;
 
     // 계좌 개설
     @PostMapping
@@ -55,5 +57,14 @@ public class AccountController {
     @PostMapping("/{accountNo}/withdraw")
     public ResponseEntity<TransactionResponse> withdraw(@PathVariable String accountNo, @Valid @RequestBody TransactionRequest request){
         return ResponseEntity.ok(accountService.withdraw(accountNo, request.amount()));
+    }
+
+    // 거래내역 조회
+    @GetMapping("/{accountNo}/transactions/offset")
+    public ResponseEntity<List<TransactionResponse>> getTransactionsByOffest(
+            @PathVariable String accountNo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size){
+            return ResponseEntity.ok(transactionService.getTransactionsByOffset(accountNo, page, size));
     }
 }
